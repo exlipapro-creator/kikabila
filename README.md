@@ -1,29 +1,31 @@
-# Welcome to your Lovable project
+# Kikabila
 
-This project was built with [Lovable](https://lovable.dev).
+A gamified crowdsourcing platform for building a verified Tanzanian-language corpus. Players receive daily Swahili-to-tribal-language translation challenges, submit answers, and see how the community consensus forms around them.
 
-## Build with Lovable
+## Features
 
-Open your project in the [Lovable editor](https://lovable.dev) and keep building.
-
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: connect the project to GitHub and every change made in Lovable is committed straight to your repository.
-- **Full ownership**: this code is yours. Push to your repository and your changes sync back into Lovable, ready for your next prompt.
+- **Daily Translation Challenges**: Swahili-to-tribal-language translation with cultural context
+- **Gamification**: XP, levels, badges, streaks, gems, and weekly leagues
+- **Community Consensus**: See how the community answers and build confidence
+- **Verified Corpus**: Reviewer workflow for verified translations
+- **Internationalization**: English and Swahili support
+- **Role-based Access**: User, reviewer, and admin roles
 
 ## Development
 
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
+You need Node.js and Bun — [install Bun](https://bun.sh/).
 
 ```sh
-git clone <this-repository-url>
-cd <repository-name>
-npm i
-npm run dev
+git clone https://github.com/exlipapro-creator/kikabila.git
+cd kikabila
+bun install
+bun run dev
 ```
 
 ## Built with
 
-- TanStack Start
+- TanStack Start v1
 - TypeScript
 - React
 - Tailwind CSS
+- Supabase

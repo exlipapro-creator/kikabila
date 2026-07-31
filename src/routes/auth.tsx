@@ -2,7 +2,6 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable/index";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
@@ -57,18 +56,6 @@ function Auth() {
     }
   }
 
-  async function google() {
-    const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin,
-    });
-    if (result.error) {
-      toast.error(t("auth.googleFailed"));
-      return;
-    }
-    if (result.redirected) return;
-    navigate({ to: "/" });
-  }
-
   return (
     <main className="mx-auto flex max-w-md flex-col px-4 py-16">
       <h1 className="text-center font-display text-4xl text-primary">
@@ -76,13 +63,6 @@ function Auth() {
       </h1>
       <p className="mt-2 text-center text-sm text-muted-foreground">{t("auth.sub")}</p>
       <Card className="mt-8 p-6">
-        <Button variant="secondary" className="w-full" onClick={google}>
-          {t("auth.google")}
-        </Button>
-        <div className="my-5 flex items-center gap-3 text-xs text-muted-foreground">
-          <span className="h-px flex-1 bg-border" /> {t("auth.or")}{" "}
-          <span className="h-px flex-1 bg-border" />
-        </div>
         <form className="space-y-4" onSubmit={submit}>
           {mode === "signup" && (
             <div>
