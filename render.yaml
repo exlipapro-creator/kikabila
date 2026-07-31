@@ -7,11 +7,3 @@ services:
     envVars:
       - key: NODE_VERSION
         value: 20
-      - key: VITE_SUPABASE_URL
-        value: https://mtdnwlpzowmedkelridl.supabase.co
-      - key: VITE_SUPABASE_PUBLISHABLE_KEY
-        value: sb_publishable_P4cKk4WnqcBYHmJ1piSkLw_kq4ZNiOA
-      - key: SUPABASE_URL
-        value: https://mtdnwlpzowmedkelridl.supabase.co
-      - key: SUPABASE_PUBLISHABLE_KEY
-        value: sb_publishable_P4cKk4WnqcBYHmJ1piSkLw_kq4ZNiOA
