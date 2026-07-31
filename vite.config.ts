@@ -10,6 +10,10 @@ export default defineConfig({
   resolve: {
     tsconfigPaths: true,
   },
+  define: {
+    'import.meta.env.VITE_SUPABASE_URL': JSON.stringify('https://mtdnwlpzowmedkelridl.supabase.co'),
+    'import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY': JSON.stringify('sb_publishable_P4cKk4WnqcBYHmJ1piSkLw_kq4ZNiOA'),
+  },
   build: {
     outDir: 'dist',
     rollupOptions: {
