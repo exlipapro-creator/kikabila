@@ -1,19 +1,16 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
+import tailwindcss from "@tailwindcss/vite";
 import tanstackRouter from "@tanstack/router-plugin/vite";
+import tsconfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig({
   plugins: [
     tanstackRouter(),
     react(),
+    tailwindcss(),
+    tsconfigPaths(),
   ],
-  resolve: {
-    tsconfigPaths: true,
-  },
-  define: {
-    'import.meta.env.VITE_SUPABASE_URL': JSON.stringify('https://mtdnwlpzowmedkelridl.supabase.co'),
-    'import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY': JSON.stringify('sb_publishable_P4cKk4WnqcBYHmJ1piSkLw_kq4ZNiOA'),
-  },
   build: {
     outDir: 'dist',
     rollupOptions: {
