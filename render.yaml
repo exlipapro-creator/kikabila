@@ -3,7 +3,7 @@ services:
     name: kikabila
     runtime: node
     buildCommand: npm install && npm run build
-    startCommand: npm install -g serve && serve -s dist -l 3000
+    startCommand: npm start
     envVars:
       - key: NODE_VERSION
         value: 20
