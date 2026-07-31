@@ -1,15 +1,18 @@
 import { defineConfig } from "vite";
+import { createTanStackStartPlugin } from "@tanstack/start-plugin";
 import react from "@vitejs/plugin-react";
-import viteTsconfigPaths from "vite-tsconfig-paths";
-import { TanStackRouter } from "@tanstack/router-plugin/vite";
+import tanstackRouter from "@tanstack/router-plugin/vite";
 
 export default defineConfig({
   plugins: [
+    createTanStackStartPlugin({
+      handler: "./src/server.ts",
+      globalMiddlewareEntry: "./src/middleware.ts",
+    }),
+    tanstackRouter(),
     react(),
-    viteTsconfigPaths(),
-    TanStackRouter(),
   ],
-  tanstackStart: {
-    server: { entry: "server" },
+  resolve: {
+    tsconfigPaths: true,
   },
 });
