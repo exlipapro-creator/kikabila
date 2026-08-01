@@ -255,16 +255,16 @@ function Play() {
         </Card>
       ) : (
         <Card className="mt-6 overflow-hidden">
-          <div className="border-b border-border/60 bg-secondary/40 px-6 py-3 text-xs uppercase tracking-widest text-muted-foreground">
+          <div className="border-b border-border/60 bg-secondary/40 px-4 py-3 text-xs uppercase tracking-widest text-muted-foreground sm:px-6">
             {challenge.category} · {challenge.reason}
           </div>
-          <div className="px-6 py-8 text-center">
+          <div className="px-4 py-6 text-center sm:px-6 sm:py-8">
             <p className="text-sm text-muted-foreground">{t("play.howDoYouSay")}</p>
-            <h1 className="mt-1 font-display text-5xl text-primary">{challenge.swahili_word}</h1>
+            <h1 className="mt-1 font-display text-4xl text-primary sm:text-5xl">{challenge.swahili_word}</h1>
             <p className="mt-1 text-sm italic text-muted-foreground">"{challenge.english_word}"</p>
           </div>
 
-          <div className="space-y-3 px-6 pb-6">
+          <div className="space-y-3 px-4 pb-6 sm:px-6">
             <Input
               value={answer}
               disabled={locked}
@@ -303,8 +303,8 @@ function Play() {
           </div>
 
           {locked && (
-            <div className="border-t border-border/60 bg-secondary/30 px-6 py-5">
-              <div className="mb-3 flex items-center gap-2 text-sm">
+            <div className="border-t border-border/60 bg-secondary/30 px-4 py-5 sm:px-6">
+              <div className="mb-3 flex flex-wrap items-center gap-2 text-sm">
                 <Users size={16} className="text-accent" />
                 <span className="font-medium">{t("play.consensusTitle")}</span>
                 {leader &&
@@ -321,7 +321,7 @@ function Play() {
               <ul className="space-y-2">
                 {candidates.map((c) => (
                   <li key={c.id} className="rounded-lg bg-background/60 p-3">
-                    <div className="flex items-center justify-between gap-3">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
                       <span
                         className={
                           c.normalized_text === myNormalized ? "font-semibold text-primary" : ""
@@ -355,29 +355,29 @@ function Play() {
 function Landing() {
   const { t } = useT();
   return (
-    <main className="mx-auto max-w-3xl px-4 py-20 text-center">
+    <main className="mx-auto max-w-3xl px-4 py-12 text-center sm:py-20">
       <p className="text-xs uppercase tracking-[0.3em] text-accent">{t("landing.kicker")}</p>
-      <h1 className="mt-4 font-display text-6xl leading-tight text-primary">{t("landing.title")}</h1>
-      <p className="mx-auto mt-6 max-w-xl text-muted-foreground">{t("landing.body")}</p>
-      <div className="mt-8 flex justify-center gap-3">
+      <h1 className="mt-4 font-display text-4xl leading-tight text-primary sm:text-6xl">{t("landing.title")}</h1>
+      <p className="mx-auto mt-6 max-w-xl text-sm text-muted-foreground sm:text-base">{t("landing.body")}</p>
+      <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
         <a
           href="/auth"
-          className="rounded-full bg-primary px-6 py-3 font-medium text-primary-foreground"
+          className="w-full rounded-full bg-primary px-6 py-3 font-medium text-primary-foreground sm:w-auto"
         >
           {t("landing.start")}
         </a>
-        <a href="/corpus" className="rounded-full border border-border px-6 py-3">
+        <a href="/corpus" className="w-full rounded-full border border-border px-6 py-3 sm:w-auto">
           {t("landing.browse")}
         </a>
       </div>
-      <div className="mt-16 grid gap-4 text-left sm:grid-cols-3">
+      <div className="mt-12 grid gap-4 text-left sm:mt-16 sm:grid-cols-3">
         {([
           ["landing.f1t", "landing.f1d"],
           ["landing.f2t", "landing.f2d"],
           ["landing.f3t", "landing.f3d"],
         ] as const).map(([tk, dk]) => (
           <Card key={tk} className="p-5">
-            <h2 className="font-display text-2xl">{t(tk)}</h2>
+            <h2 className="font-display text-xl sm:text-2xl">{t(tk)}</h2>
             <p className="mt-2 text-sm text-muted-foreground">{t(dk)}</p>
           </Card>
         ))}

@@ -201,7 +201,7 @@ function CandidateReview({ candidate, onDone }: { candidate: any; onDone: () => 
         </div>
         <div className="mt-3 flex items-center gap-3">
           <Progress value={Number(candidate.confidence) * 100} className="h-2 flex-1" />
-          <span className="w-44 text-right text-xs text-muted-foreground">
+          <span className="shrink-0 text-right text-xs text-muted-foreground">
             {Math.round(Number(candidate.confidence) * 100)}% {t("play.confidence")} ·{" "}
             {candidate.submission_count} {t("play.obs")}
           </span>
@@ -279,11 +279,11 @@ function CandidateReview({ candidate, onDone }: { candidate: any; onDone: () => 
                 rows={2}
                 placeholder={t("review.notePlaceholder")}
               />
-              <div className="flex gap-2">
-                <Button disabled={busy} onClick={() => act("promote")}>
+              <div className="flex flex-col gap-2 sm:flex-row">
+                <Button className="flex-1" disabled={busy} onClick={() => act("promote")}>
                   {t("review.promote")}
                 </Button>
-                <Button variant="secondary" disabled={busy} onClick={() => act("reject")}>
+                <Button className="flex-1 sm:flex-none" variant="secondary" disabled={busy} onClick={() => act("reject")}>
                   {t("review.reject")}
                 </Button>
               </div>

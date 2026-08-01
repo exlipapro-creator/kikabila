@@ -54,9 +54,9 @@ export function PlayerHud({
       <div className="flex flex-wrap items-center gap-4 p-4">
         <LevelRing pct={lvl.pct} level={lvl.level} />
 
-        <div className="min-w-[10rem] flex-1">
+        <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-baseline gap-x-2">
-            <span className="font-display text-2xl">
+            <span className="font-display text-xl sm:text-2xl">
               {profile?.display_name ?? t("play.player")}
             </span>
             <span className="rank-chip">{rankTitle(lvl.level)}</span>
@@ -67,7 +67,7 @@ export function PlayerHud({
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="grid grid-cols-2 gap-x-4 gap-y-2 sm:flex sm:items-center sm:gap-3">
           <Stat icon={<Flame size={16} />} value={profile?.streak_current ?? 0} label={t("play.streak")} tone="primary" />
           <Stat icon={<Gem size={16} />} value={profile?.gems ?? 0} label={t("hud.gems")} tone="accent" />
           <Stat

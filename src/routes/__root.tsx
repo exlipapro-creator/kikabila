@@ -5,8 +5,9 @@ import {
   createRootRouteWithContext,
   useRouter,
 } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Toaster } from "@/components/ui/sonner";
+import { Menu, X } from "lucide-react";
 
 import { CelebrationLayer } from "@/components/Celebration";
 import { supabase } from "@/integrations/supabase/client";
@@ -89,13 +90,21 @@ const NAV = [
 function Nav() {
   const { user } = useSession();
   const { t } = useT();
+  const [open, setOpen] = useState(false);
+
+  // Close menu on route change
+  const close = () => setOpen(false);
+
   return (
     <header className="sticky top-0 z-40 border-b border-border/60 bg-background/85 backdrop-blur">
+      {/* Desktop + mobile top bar */}
       <nav className="mx-auto flex max-w-5xl items-center gap-1 px-4 py-3">
-        <Link to="/" className="mr-3 font-display text-2xl tracking-tight text-primary">
+        <Link to="/" onClick={close} className="mr-3 font-display text-2xl tracking-tight text-primary">
           Kikabila
         </Link>
-        <div className="flex flex-1 flex-wrap items-center gap-1">
+
+        {/* Desktop nav links */}
+        <div className="hidden flex-1 items-center gap-1 md:flex">
           {NAV.map((n) => (
             <Link
               key={n.to}
@@ -107,23 +116,74 @@ function Nav() {
             </Link>
           ))}
         </div>
-        <UiLangToggle />
-        {user ? (
+
+        {/* Right-side controls */}
+        <div className="ml-auto flex items-center gap-2">
+          <UiLangToggle />
+          {user ? (
+            <button
+              onClick={() => supabase.auth.signOut()}
+              className="hidden rounded-full border border-border px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground md:inline-flex"
+            >
+              {t("nav.signOut")}
+            </button>
+          ) : (
+            <Link
+              to="/auth"
+              className="hidden rounded-full bg-primary px-4 py-1.5 text-sm font-medium text-primary-foreground md:inline-flex"
+            >
+              {t("nav.signIn")}
+            </Link>
+          )}
+
+          {/* Hamburger — mobile only */}
           <button
-            onClick={() => supabase.auth.signOut()}
-            className="ml-1 rounded-full border border-border px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground"
+            className="inline-flex items-center justify-center rounded-md p-2 text-muted-foreground hover:bg-secondary hover:text-foreground md:hidden"
+            aria-label={open ? "Close menu" : "Open menu"}
+            aria-expanded={open}
+            onClick={() => setOpen((v) => !v)}
           >
-            {t("nav.signOut")}
+            {open ? <X size={20} /> : <Menu size={20} />}
           </button>
-        ) : (
-          <Link
-            to="/auth"
-            className="ml-1 rounded-full bg-primary px-4 py-1.5 text-sm font-medium text-primary-foreground"
-          >
-            {t("nav.signIn")}
-          </Link>
-        )}
+        </div>
       </nav>
+
+      {/* Mobile dropdown */}
+      {open && (
+        <div className="border-t border-border/60 bg-background/95 px-4 pb-4 md:hidden">
+          <div className="flex flex-col gap-1 pt-2">
+            {NAV.map((n) => (
+              <Link
+                key={n.to}
+                to={n.to}
+                onClick={close}
+                className="rounded-lg px-3 py-2.5 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground [&.active]:bg-secondary [&.active]:font-medium [&.active]:text-foreground"
+                activeOptions={{ exact: n.to === "/" }}
+              >
+                {t(n.key)}
+              </Link>
+            ))}
+            <div className="mt-2 border-t border-border/60 pt-2">
+              {user ? (
+                <button
+                  onClick={() => { supabase.auth.signOut(); close(); }}
+                  className="w-full rounded-lg px-3 py-2.5 text-left text-sm text-muted-foreground hover:bg-secondary hover:text-foreground"
+                >
+                  {t("nav.signOut")}
+                </button>
+              ) : (
+                <Link
+                  to="/auth"
+                  onClick={close}
+                  className="block rounded-lg bg-primary px-3 py-2.5 text-center text-sm font-medium text-primary-foreground"
+                >
+                  {t("nav.signIn")}
+                </Link>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </header>
   );
 }

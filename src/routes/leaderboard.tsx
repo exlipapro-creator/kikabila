@@ -95,13 +95,13 @@ function Leaderboard() {
       ) : (
         <ol className="mt-6 space-y-2">
           {board.data.map((p, i) => (
-            <Card
+          <Card
               key={p.id}
-              className={`flex items-center gap-4 p-4 transition-transform hover:-translate-y-0.5 ${
+              className={`flex items-center gap-3 p-3 transition-transform hover:-translate-y-0.5 sm:gap-4 sm:p-4 ${
                 p.id === user?.id ? "border-primary shadow-md" : ""
               } ${i < 3 ? podium[i] : ""}`}
             >
-              <span className="w-6 text-center font-display text-xl text-muted-foreground">
+              <span className="w-6 shrink-0 text-center font-display text-xl text-muted-foreground">
                 {i === 0 ? <Trophy size={18} className="mx-auto text-accent" /> : i + 1}
               </span>
               <div className="min-w-0 flex-1">
@@ -116,12 +116,12 @@ function Leaderboard() {
                 </p>
               </div>
               {(p.streak_current ?? 0) > 0 && (
-                <Badge variant="outline" className="gap-1">
+                <Badge variant="outline" className="hidden gap-1 sm:flex">
                   <Flame size={12} className="text-accent" />
                   {p.streak_current}
                 </Badge>
               )}
-              <span className="w-20 text-right font-display text-lg">{p.xp} XP</span>
+              <span className="shrink-0 text-right font-display text-base sm:text-lg">{p.xp} XP</span>
             </Card>
           ))}
         </ol>

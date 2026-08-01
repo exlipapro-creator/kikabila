@@ -79,15 +79,15 @@ function ProfilePage() {
     <main className="mx-auto max-w-3xl px-4 py-10">
       <Card className="flex flex-wrap items-center gap-5 p-5">
         <LevelRing pct={lvl.pct} level={lvl.level} />
-        <div className="min-w-[12rem] flex-1">
-          <h1 className="font-display text-3xl text-primary">
+        <div className="min-w-0 flex-1">
+          <h1 className="font-display text-2xl text-primary sm:text-3xl">
             {profile?.display_name ?? t("play.player")}
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
             {rankTitle(lvl.level)} · {profile?.xp ?? 0} XP · {t("hud.rank")} #{s?.rank ?? "—"}
           </p>
         </div>
-        <div className="grid grid-cols-3 gap-4 text-center">
+        <div className="grid w-full grid-cols-3 gap-4 text-center sm:w-auto">
           <Metric value={profile?.streak_current ?? 0} label={t("play.streak")} />
           <Metric value={profile?.streak_longest ?? 0} label={t("profile.longest")} />
           <Metric value={earned.size} label={t("profile.badges")} />

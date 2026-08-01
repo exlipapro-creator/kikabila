@@ -75,7 +75,7 @@ function Consensus() {
               </div>
               <div className="mt-3 flex items-center gap-3">
                 <Progress value={Number(c.confidence) * 100} className="h-2 flex-1" />
-                <span className="w-40 text-right text-xs text-muted-foreground">
+                <span className="shrink-0 text-right text-xs text-muted-foreground">
                   {Math.round(Number(c.confidence) * 100)}% {t("play.confidence")} ·{" "}
                   {c.submission_count} {t("play.obs")} ·{" "}
                   {Math.round(Number(c.agreement_ratio) * 100)}% {t("consensus.agree")}
