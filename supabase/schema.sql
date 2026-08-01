@@ -4,12 +4,20 @@
 -- =============================================================
 
 -- ── Enums ─────────────────────────────────────────────────────
-create type public.app_role as enum ('contributor', 'reviewer', 'admin');
-create type public.candidate_status as enum ('pending', 'queued', 'promoted', 'rejected');
-create type public.translation_status as enum ('verified', 'archived');
+do $$ begin
+  create type public.app_role as enum ('contributor', 'reviewer', 'admin');
+exception when duplicate_object then null; end $$;
+
+do $$ begin
+  create type public.candidate_status as enum ('pending', 'queued', 'promoted', 'rejected');
+exception when duplicate_object then null; end $$;
+
+do $$ begin
+  create type public.translation_status as enum ('verified', 'archived');
+exception when duplicate_object then null; end $$;
 
 -- ── Base reference tables ─────────────────────────────────────
-create table public.languages (
+create table if not exists public.languages (
   id                serial primary key,
   code              text not null unique,
   name              text not null,
@@ -17,14 +25,14 @@ create table public.languages (
   target_word_count int  not null default 500
 );
 
-create table public.base_words (
+create table if not exists public.base_words (
   id            serial primary key,
   swahili_word  text not null,
   english_word  text not null,
   category      text not null default 'general'
 );
 
-create table public.badges (
+create table if not exists public.badges (
   code        text primary key,
   name        text not null,
   description text not null,
@@ -35,7 +43,7 @@ create table public.badges (
 );
 
 -- ── User-facing tables ────────────────────────────────────────
-create table public.profiles (
+create table if not exists public.profiles (
   id               uuid primary key references auth.users on delete cascade,
   display_name     text not null default 'Player',
   xp               int  not null default 0,
@@ -51,14 +59,14 @@ create table public.profiles (
   created_at       timestamptz not null default now()
 );
 
-create table public.user_roles (
+create table if not exists public.user_roles (
   id      uuid primary key default gen_random_uuid(),
   user_id uuid not null references auth.users on delete cascade,
   role    public.app_role not null,
   unique (user_id, role)
 );
 
-create table public.user_badges (
+create table if not exists public.user_badges (
   id         uuid primary key default gen_random_uuid(),
   user_id    uuid not null references auth.users on delete cascade,
   badge_code text not null references public.badges(code),
@@ -66,7 +74,7 @@ create table public.user_badges (
   unique (user_id, badge_code)
 );
 
-create table public.xp_events (
+create table if not exists public.xp_events (
   id         uuid primary key default gen_random_uuid(),
   user_id    uuid not null references auth.users on delete cascade,
   amount     int  not null,
@@ -75,7 +83,7 @@ create table public.xp_events (
 );
 
 -- ── Submission & consensus pipeline ───────────────────────────
-create table public.challenges (
+create table if not exists public.challenges (
   id          uuid primary key default gen_random_uuid(),
   user_id     uuid not null references auth.users on delete cascade,
   base_word_id int not null references public.base_words(id),
@@ -86,7 +94,7 @@ create table public.challenges (
   created_at  timestamptz not null default now()
 );
 
-create table public.submissions (
+create table if not exists public.submissions (
   id                    uuid primary key default gen_random_uuid(),
   user_id               uuid not null references auth.users on delete cascade,
   base_word_id          int  not null references public.base_words(id),
@@ -101,7 +109,7 @@ create table public.submissions (
   created_at            timestamptz not null default now()
 );
 
-create table public.candidates (
+create table if not exists public.candidates (
   id               uuid primary key default gen_random_uuid(),
   base_word_id     int  not null references public.base_words(id),
   language_id      int  not null references public.languages(id),
@@ -122,7 +130,7 @@ create table public.candidates (
 );
 
 -- ── Verified corpus ───────────────────────────────────────────
-create table public.translations (
+create table if not exists public.translations (
   id              uuid primary key default gen_random_uuid(),
   base_word_id    int  not null references public.base_words(id),
   language_id     int  not null references public.languages(id),
@@ -136,7 +144,7 @@ create table public.translations (
   created_at      timestamptz not null default now()
 );
 
-create table public.translation_history (
+create table if not exists public.translation_history (
   id              uuid primary key default gen_random_uuid(),
   translation_id  uuid references public.translations(id),
   candidate_id    uuid,
@@ -149,12 +157,12 @@ create table public.translation_history (
 );
 
 -- ── Indexes ───────────────────────────────────────────────────
-create index on public.submissions(user_id, created_at desc);
-create index on public.submissions(base_word_id, language_id);
-create index on public.candidates(base_word_id, language_id);
-create index on public.candidates(status);
-create index on public.translations(base_word_id, language_id);
-create index on public.xp_events(user_id, created_at desc);
+create index if not exists idx_submissions_user_created   on public.submissions(user_id, created_at desc);
+create index if not exists idx_submissions_word_lang      on public.submissions(base_word_id, language_id);
+create index if not exists idx_candidates_word_lang       on public.candidates(base_word_id, language_id);
+create index if not exists idx_candidates_status          on public.candidates(status);
+create index if not exists idx_translations_word_lang     on public.translations(base_word_id, language_id);
+create index if not exists idx_xp_events_user_created     on public.xp_events(user_id, created_at desc);
 
 -- ── Row-Level Security ────────────────────────────────────────
 alter table public.profiles        enable row level security;
@@ -171,32 +179,47 @@ alter table public.languages       enable row level security;
 alter table public.base_words      enable row level security;
 
 -- Public read-only tables
+drop policy if exists "public read" on public.languages;
 create policy "public read" on public.languages       for select using (true);
+drop policy if exists "public read" on public.base_words;
 create policy "public read" on public.base_words      for select using (true);
+drop policy if exists "public read" on public.badges;
 create policy "public read" on public.badges          for select using (true);
+drop policy if exists "public read" on public.translations;
 create policy "public read" on public.translations    for select using (true);
+drop policy if exists "public read" on public.translation_history;
 create policy "public read" on public.translation_history for select using (true);
+drop policy if exists "public read" on public.candidates;
 create policy "public read" on public.candidates      for select using (true);
 
 -- Profiles: owner read/update, insert on first login
+drop policy if exists "owner read"   on public.profiles;
 create policy "owner read"   on public.profiles for select using (auth.uid() = id);
+drop policy if exists "owner update" on public.profiles;
 create policy "owner update" on public.profiles for update using (auth.uid() = id);
+drop policy if exists "owner insert" on public.profiles;
 create policy "owner insert" on public.profiles for insert with check (auth.uid() = id);
 
 -- User roles: self read
+drop policy if exists "owner read" on public.user_roles;
 create policy "owner read" on public.user_roles for select using (auth.uid() = user_id);
 
 -- User badges: self read
+drop policy if exists "owner read" on public.user_badges;
 create policy "owner read" on public.user_badges for select using (auth.uid() = user_id);
 
 -- XP events: self read
+drop policy if exists "owner read" on public.xp_events;
 create policy "owner read" on public.xp_events for select using (auth.uid() = user_id);
 
 -- Challenges: owner CRUD
+drop policy if exists "owner all" on public.challenges;
 create policy "owner all" on public.challenges for all using (auth.uid() = user_id);
 
 -- Submissions: owner insert + read, public read for consensus
+drop policy if exists "owner insert" on public.submissions;
 create policy "owner insert" on public.submissions for insert with check (auth.uid() = user_id);
+drop policy if exists "public read"  on public.submissions;
 create policy "public read"  on public.submissions for select using (true);
 
 -- ── Auto-create profile on signup ────────────────────────────
@@ -218,6 +241,7 @@ begin
 end;
 $$;
 
+drop trigger if exists on_auth_user_created on auth.users;
 create trigger on_auth_user_created
   after insert on auth.users
   for each row execute procedure public.handle_new_user();
@@ -287,6 +311,7 @@ begin
 end;
 $$;
 
+drop trigger if exists before_submission_insert on public.submissions;
 create trigger before_submission_insert
   before insert on public.submissions
   for each row execute procedure public.after_submission();
@@ -304,6 +329,7 @@ begin
 end;
 $$;
 
+drop trigger if exists after_submission_insert on public.submissions;
 create trigger after_submission_insert
   after insert on public.submissions
   for each row execute procedure public.after_submission_insert();
@@ -627,6 +653,7 @@ begin
 end;
 $$;
 
+drop trigger if exists after_submission_badges on public.submissions;
 create trigger after_submission_badges
   after insert on public.submissions
   for each row execute procedure public.after_submission_badges();
@@ -644,7 +671,8 @@ insert into public.languages (code, name, family, target_word_count) values
   ('gog', 'Gogo',       'Bantu', 500),
   ('ben', 'Bena',       'Bantu', 500),
   ('kur', 'Kurya',      'Bantu', 500),
-  ('zar', 'Zaramo',     'Bantu', 500);
+  ('zar', 'Zaramo',     'Bantu', 500)
+on conflict (code) do nothing;
 
 -- Base words (50 starter Swahili words across categories)
 insert into public.base_words (swahili_word, english_word, category) values
@@ -697,7 +725,8 @@ insert into public.base_words (swahili_word, english_word, category) values
   ('kuja',      'to come',     'verbs'),
   ('kula',      'to eat',      'verbs'),
   ('kunywa',    'to drink',    'verbs'),
-  ('kulala',    'to sleep',    'verbs');
+  ('kulala',    'to sleep',    'verbs')
+on conflict do nothing;
 
 -- Badges
 insert into public.badges (code, name, description, icon, tier, xp_reward, sort_order) values
@@ -712,7 +741,8 @@ insert into public.badges (code, name, description, icon, tier, xp_reward, sort_
   ('streak_7',    '7-Day Flame',     'Maintained a 7-day streak',                     'Flame',      'silver', 75,  9),
   ('streak_30',   'Month Guardian',  'Maintained a 30-day streak',                    'ShieldCheck','gold',   300, 10),
   ('consensus_1', 'First Consensus', 'Your answer matched the community consensus',   'Users',      'bronze', 20,  11),
-  ('top_10',      'Top Contributor', 'Reached the top 10 on the leaderboard',         'Crown',      'legend', 500, 12);
+  ('top_10',      'Top Contributor', 'Reached the top 10 on the leaderboard',         'Crown',      'legend', 500, 12)
+on conflict (code) do nothing;
 
 -- =============================================================
 -- DONE. Your Kikabila database is ready.
