@@ -68,6 +68,12 @@ const dict = {
     "auth.created": "Akaunti imeundwa",
     "auth.googleFailed": "Kuingia kwa Google kumeshindikana",
     "auth.generic": "Hitilafu imetokea",
+    "auth.checkInbox": "Angalia kikasha chako",
+    "auth.confirmSent": "Tumekutumia barua pepe ya uthibitisho kwa",
+    "auth.confirmBody": "Bonyeza kiungo kwenye barua pepe hiyo ili kukamilisha usajili wako, kisha urudi uingie.",
+    "auth.alreadyConfirmed": "Nimethibitisha tayari — ingia",
+    "auth.notConfirmed": "Thibisha barua pepe yako kwanza. Angalia kikasha chako.",
+    "auth.alreadyExists": "Anwani hii ya barua pepe tayari imesajiliwa.",
 
     "consensus.title": "Injini ya maafikiano",
     "consensus.body":
@@ -220,6 +226,12 @@ const dict = {
     "auth.created": "Account created",
     "auth.googleFailed": "Google sign-in failed",
     "auth.generic": "Something went wrong",
+    "auth.checkInbox": "Check your inbox",
+    "auth.confirmSent": "We've sent a confirmation email to",
+    "auth.confirmBody": "Click the link in that email to finish signing up, then come back here to sign in.",
+    "auth.alreadyConfirmed": "Already confirmed — sign me in",
+    "auth.notConfirmed": "Please confirm your email first. Check your inbox.",
+    "auth.alreadyExists": "This email address is already registered.",
 
     "consensus.title": "Consensus engine",
     "consensus.body":

@@ -28,13 +28,14 @@ function Auth() {
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [busy, setBusy] = useState(false);
+  const [awaitingConfirm, setAwaitingConfirm] = useState(false);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setBusy(true);
     try {
       if (mode === "signup") {
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
@@ -43,17 +44,58 @@ function Auth() {
           },
         });
         if (error) throw error;
-        toast.success(t("auth.created"));
+
+        // If identities is empty the email already exists (unconfirmed duplicate)
+        if (data.user && data.user.identities?.length === 0) {
+          toast.error(t("auth.alreadyExists"));
+          return;
+        }
+
+        // Account created — email confirmation may be required
+        if (!data.session) {
+          // Supabase requires email confirmation before sign-in works
+          setAwaitingConfirm(true);
+          setPassword("");
+          return;
+        }
+
+        // Email confirmation disabled on this project — session returned immediately
+        navigate({ to: "/" });
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
+        if (error) {
+          // Give a clearer message for the most common case
+          if (error.message.toLowerCase().includes("email not confirmed")) {
+            throw new Error(t("auth.notConfirmed"));
+          }
+          throw error;
+        }
+        navigate({ to: "/" });
       }
-      navigate({ to: "/" });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : t("auth.generic"));
     } finally {
       setBusy(false);
     }
+  }
+
+  if (awaitingConfirm) {
+    return (
+      <main className="mx-auto flex max-w-md flex-col px-4 py-16 text-center">
+        <div className="text-5xl">✉️</div>
+        <h1 className="mt-4 font-display text-3xl text-primary">{t("auth.checkInbox")}</h1>
+        <p className="mt-3 text-sm text-muted-foreground">
+          {t("auth.confirmSent")} <strong>{email}</strong>
+        </p>
+        <p className="mt-2 text-sm text-muted-foreground">{t("auth.confirmBody")}</p>
+        <button
+          className="mt-8 text-sm text-muted-foreground hover:text-foreground underline"
+          onClick={() => { setAwaitingConfirm(false); setMode("signin"); }}
+        >
+          {t("auth.alreadyConfirmed")}
+        </button>
+      </main>
+    );
   }
 
   return (
