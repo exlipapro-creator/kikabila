@@ -315,21 +315,21 @@ BEGIN
   INTO n_words,n_notes,n_langs,n_agree
   FROM public.submissions WHERE user_id=_user_id;
   earned := ARRAY[]::text[];
-  IF n_words>=1   THEN earned:=earned||'first_word'; END IF;
-  IF n_words>=10  THEN earned:=earned||'words_10';   END IF;
-  IF n_words>=50  THEN earned:=earned||'words_50';   END IF;
-  IF n_words>=100 THEN earned:=earned||'words_100';  END IF;
-  IF n_words>=250 THEN earned:=earned||'words_250';  END IF;
-  IF p.streak_longest>=3  THEN earned:=earned||'streak_3';  END IF;
-  IF p.streak_longest>=7  THEN earned:=earned||'streak_7';  END IF;
-  IF p.streak_longest>=30 THEN earned:=earned||'streak_30'; END IF;
-  IF p.days_goal_met>=1   THEN earned:=earned||'goal_1';    END IF;
-  IF p.days_goal_met>=10  THEN earned:=earned||'goal_10';   END IF;
-  IF n_notes>=10  THEN earned:=earned||'notes_10'; END IF;
-  IF n_langs>=3   THEN earned:=earned||'langs_3';  END IF;
-  IF n_langs>=6   THEN earned:=earned||'langs_6';  END IF;
-  IF n_agree>=25  THEN earned:=earned||'agree_25'; END IF;
-  IF p.trust_score>=85 THEN earned:=earned||'trust_85'; END IF;
+  IF n_words>=1   THEN earned:=array_append(earned,'first_word'); END IF;
+  IF n_words>=10  THEN earned:=array_append(earned,'words_10');   END IF;
+  IF n_words>=50  THEN earned:=array_append(earned,'words_50');   END IF;
+  IF n_words>=100 THEN earned:=array_append(earned,'words_100');  END IF;
+  IF n_words>=250 THEN earned:=array_append(earned,'words_250');  END IF;
+  IF p.streak_longest>=3  THEN earned:=array_append(earned,'streak_3');  END IF;
+  IF p.streak_longest>=7  THEN earned:=array_append(earned,'streak_7');  END IF;
+  IF p.streak_longest>=30 THEN earned:=array_append(earned,'streak_30'); END IF;
+  IF p.days_goal_met>=1   THEN earned:=array_append(earned,'goal_1');    END IF;
+  IF p.days_goal_met>=10  THEN earned:=array_append(earned,'goal_10');   END IF;
+  IF n_notes>=10  THEN earned:=array_append(earned,'notes_10'); END IF;
+  IF n_langs>=3   THEN earned:=array_append(earned,'langs_3');  END IF;
+  IF n_langs>=6   THEN earned:=array_append(earned,'langs_6');  END IF;
+  IF n_agree>=25  THEN earned:=array_append(earned,'agree_25'); END IF;
+  IF p.trust_score>=85 THEN earned:=array_append(earned,'trust_85'); END IF;
   FOR b IN SELECT bd.code,bd.xp_reward,bd.name FROM public.badges bd
     WHERE bd.code=ANY(earned)
       AND NOT EXISTS(SELECT 1 FROM public.user_badges ub WHERE ub.user_id=_user_id AND ub.badge_code=bd.code)
