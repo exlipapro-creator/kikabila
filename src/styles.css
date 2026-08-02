@@ -378,6 +378,34 @@ h1, h2, .font-display {
 .animate-xp-float { animation: xp-float 1.4s ease-out forwards; }
 .animate-trophy-pop { animation: trophy-pop 2.6s ease-out forwards; }
 
+/* ── Rotating glow border on challenge card ── */
+@property --glow-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@keyframes glow-spin {
+  to { --glow-angle: 360deg; }
+}
+
+.challenge-glow {
+  border-radius: var(--radius-lg);
+  padding: 2px;
+  background: conic-gradient(
+    from var(--glow-angle),
+    oklch(0.78 0.16 68),
+    oklch(0.62 0.13 175),
+    oklch(0.7 0.18 320),
+    oklch(0.78 0.16 68)
+  );
+  animation: glow-spin 3s linear infinite;
+}
+
+.challenge-glow > * {
+  border-radius: calc(var(--radius-lg) - 2px);
+}
+
 /* ── Challenge card transitions ── */
 .challenge-card {
   transition: opacity 300ms ease, transform 300ms ease;
@@ -412,5 +440,6 @@ h1, h2, .font-display {
   .challenge-card,
   .challenge-card.slide-in,
   .animate-check-pop,
+  .challenge-glow,
   .badge-tier-legend .badge-medal { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
 }

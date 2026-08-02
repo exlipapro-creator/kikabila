@@ -53,14 +53,4 @@ export function useRoles(userId?: string) {
   });
 }
 
-export function levelFromXp(xp: number) {
-  const level = Math.floor(Math.sqrt(xp / 50)) + 1;
-  const floor = 50 * (level - 1) ** 2;
-  const next = 50 * level ** 2;
-  return {
-    level,
-    into: xp - floor,
-    span: next - floor,
-    pct: Math.round(((xp - floor) / (next - floor)) * 100),
-  };
-}
+

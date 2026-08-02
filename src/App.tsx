@@ -1,23 +1,16 @@
 import { RouterProvider } from "@tanstack/react-router";
-import { CelebrationLayer } from "@/components/Celebration";
-import { getRouter } from "./router";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { Toaster } from "@/components/ui/sonner";
+import { UiLangProvider } from "@/lib/i18n";
+import { router, queryClient } from "./router";
 
 export default function App() {
-  try {
-    const router = getRouter();
-    return (
-      <>
+  return (
+    <QueryClientProvider client={queryClient}>
+      <UiLangProvider>
         <RouterProvider router={router} />
-        <CelebrationLayer />
-      </>
-    );
-  } catch (error) {
-    console.error("Router initialization error:", error);
-    return (
-      <div style={{ padding: "20px", fontFamily: "sans-serif" }}>
-        <h1>Router Error</h1>
-        <p>Failed to initialize router: {error instanceof Error ? error.message : String(error)}</p>
-      </div>
-    );
-  }
+        <Toaster position="top-center" />
+      </UiLangProvider>
+    </QueryClientProvider>
+  );
 }

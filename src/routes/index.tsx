@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -103,7 +103,8 @@ function Play() {
   const { t } = useT();
   const { user, ready } = useSession();
   const { data: profile } = useProfile(user?.id);
-  const { languages, languageId, setLanguageId } = useLanguages();
+  const preferredIds = (profile?.preferred_language_ids ?? []) as number[];
+  const { languages, languageId, setLanguageId } = useLanguages(preferredIds);
   const qc = useQueryClient();
   const inputRef = useRef<HTMLInputElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
@@ -338,6 +339,8 @@ function Play() {
         languages={languages.data ?? []}
         value={languageId}
         onChange={setLanguageId}
+        preferredIds={preferredIds}
+        loading={languages.isLoading}
       />
 
       {phase === "loading" && !challenge ? (
@@ -358,6 +361,8 @@ function Play() {
           ref={cardRef}
           className={`mt-6 challenge-card ${cardAnim}`}
         >
+          {/* Rotating glow wrapper — active while the user can type */}
+          <div className={phase === "idle" || phase === "submitting" ? "challenge-glow" : ""}>
           <Card className="overflow-hidden">
             {/* Category bar */}
             <div className="flex items-center justify-between border-b border-border/60 bg-secondary/40 px-4 py-3 sm:px-6">
@@ -470,6 +475,7 @@ function Play() {
               </div>
             )}
           </Card>
+          </div> {/* /challenge-glow */}
         </div>
       )}
     </main>
@@ -484,12 +490,12 @@ function Landing() {
       <h1 className="mt-4 font-display text-4xl leading-tight text-primary sm:text-6xl">{t("landing.title")}</h1>
       <p className="mx-auto mt-6 max-w-xl text-sm text-muted-foreground sm:text-base">{t("landing.body")}</p>
       <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
-        <a href="/auth" className="w-full rounded-full bg-primary px-6 py-3 font-medium text-primary-foreground sm:w-auto">
+        <Link to="/auth" className="w-full rounded-full bg-primary px-6 py-3 font-medium text-primary-foreground sm:w-auto">
           {t("landing.start")}
-        </a>
-        <a href="/corpus" className="w-full rounded-full border border-border px-6 py-3 sm:w-auto">
+        </Link>
+        <Link to="/corpus" className="w-full rounded-full border border-border px-6 py-3 sm:w-auto">
           {t("landing.browse")}
-        </a>
+        </Link>
       </div>
       <div className="mt-12 grid gap-4 text-left sm:mt-16 sm:grid-cols-3">
         {([["landing.f1t","landing.f1d"],["landing.f2t","landing.f2d"],["landing.f3t","landing.f3d"]] as const).map(([tk,dk]) => (
