@@ -157,13 +157,19 @@ function Play() {
       base_word_id: challenge.base_word_id,
       language_id: languageId,
       translated_text: answer.trim(),
-      // recomputed server-side by a trigger; sent to satisfy the NOT NULL column
       normalized_text: answer.trim().toLowerCase().replace(/[^a-z0-9 ]/g, ""),
       cultural_note: note.trim() || null,
     });
     setBusy(false);
     if (error) {
-      toast.error(error.message);
+      // Unique constraint = already answered this word; treat as already locked
+      if (error.code === "23505") {
+        setLocked(true);
+        toast.success(t("play.locked"));
+        return;
+      }
+      toast.error(`${error.message}${error.details ? ` — ${error.details}` : ""}${error.hint ? ` (${error.hint})` : ""}`);
+      console.error("Submission error:", error);
       return;
     }
     setLocked(true);
