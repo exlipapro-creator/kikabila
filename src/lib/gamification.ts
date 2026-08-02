@@ -16,14 +16,14 @@ export function levelFromXp(xp: number) {
 }
 
 const RANKS = [
-  "Msikilizaji", // listener
-  "Mwanafunzi", // learner
-  "Mkusanyaji", // collector
-  "Mtafsiri", // translator
+  "Msikilizaji",    // listener
+  "Mwanafunzi",     // learner
+  "Mkusanyaji",     // collector
+  "Mtafsiri",       // translator
   "Mlinzi wa Maneno", // word keeper
-  "Mwandishi", // scribe
-  "Mzee wa Lugha", // language elder
-  "Mhifadhi", // archivist
+  "Mwandishi",      // scribe
+  "Mzee wa Lugha",  // language elder
+  "Mhifadhi",       // archivist
 ] as const;
 
 export function rankTitle(level: number) {
@@ -35,7 +35,7 @@ export type BadgeTier = "bronze" | "silver" | "gold" | "legend";
 export const TIER_CLASS: Record<BadgeTier, string> = {
   bronze: "badge-tier-bronze",
   silver: "badge-tier-silver",
-  gold: "badge-tier-gold",
+  gold:   "badge-tier-gold",
   legend: "badge-tier-legend",
 };
 
@@ -52,7 +52,7 @@ export type Badge = {
 export function useBadges() {
   return useQuery({
     queryKey: ["badges"],
-    staleTime: 60 * 60 * 1000,
+    staleTime: 60 * 60_000, // 1 hour — badge definitions never change at runtime
     queryFn: async () => {
       const { data, error } = await supabase
         .from("badges")
@@ -68,6 +68,7 @@ export function useUserBadges(userId?: string) {
   return useQuery({
     queryKey: ["user-badges", userId],
     enabled: !!userId,
+    staleTime: 30_000, // 30s — badges unlock after submissions
     queryFn: async () => {
       const { data, error } = await supabase
         .from("user_badges")
@@ -96,6 +97,7 @@ export function usePlayerStats(userId?: string) {
   return useQuery({
     queryKey: ["player-stats", userId],
     enabled: !!userId,
+    staleTime: 30_000, // 30s — updates after each submission
     queryFn: async () => {
       const { data, error } = await supabase.rpc("player_stats");
       if (error) throw error;
@@ -109,14 +111,20 @@ export function useToday(userId?: string) {
   return useQuery({
     queryKey: ["today", userId],
     enabled: !!userId,
+    staleTime: 10_000, // 10s — needs to be fresh during active gameplay
     queryFn: async () => {
-      const start = new Date();
-      start.setHours(0, 0, 0, 0);
+      // Use UTC midnight to align with the DB trigger's CURRENT_DATE
+      const now = new Date();
+      const utcMidnight = new Date(Date.UTC(
+        now.getUTCFullYear(),
+        now.getUTCMonth(),
+        now.getUTCDate(),
+      ));
       const { data, error } = await supabase
         .from("submissions")
         .select("id, cultural_note, language_id, agreed_with_consensus")
         .eq("user_id", userId!)
-        .gte("created_at", start.toISOString());
+        .gte("created_at", utcMidnight.toISOString());
       if (error) throw error;
       const rows = data ?? [];
       return {
@@ -142,9 +150,9 @@ export function buildQuests(
   labels: { words: string; notes: string; languages: string; spark: string },
 ): Quest[] {
   return [
-    { id: "words", label: labels.words, progress: today.count, target: dailyGoal, reward: 50 },
-    { id: "spark", label: labels.spark, progress: Math.min(today.count, 1), target: 1, reward: 15 },
-    { id: "notes", label: labels.notes, progress: today.notes, target: 2, reward: 10 },
-    { id: "langs", label: labels.languages, progress: today.languages, target: 2, reward: 20 },
+    { id: "words",  label: labels.words,     progress: today.count,    target: dailyGoal, reward: 50 },
+    { id: "spark",  label: labels.spark,     progress: Math.min(today.count, 1), target: 1, reward: 15 },
+    { id: "notes",  label: labels.notes,     progress: today.notes,    target: 2,         reward: 10 },
+    { id: "langs",  label: labels.languages, progress: today.languages, target: 2,        reward: 20 },
   ];
 }

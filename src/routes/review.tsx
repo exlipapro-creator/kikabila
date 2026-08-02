@@ -106,7 +106,7 @@ function Review() {
       <h1 className="font-display text-4xl text-primary">{t("review.title")}</h1>
       <p className="mt-2 max-w-xl text-sm text-muted-foreground">{t("review.body")}</p>
       <div className="mt-6">
-        <LanguagePicker languages={languages.data ?? []} value={languageId} onChange={setLanguageId} />
+        <LanguagePicker languages={languages.data ?? []} value={languageId} onChange={setLanguageId} loading={languages.isLoading} />
       </div>
 
       {queue.isLoading ? (

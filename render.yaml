@@ -1,9 +1,25 @@
 services:
   - type: web
     name: kikabila
-    runtime: node
+    runtime: static
     buildCommand: npm install && npm run build
-    startCommand: serve dist -p 3000 -s
+    staticPublishPath: dist
+    pullRequestPreviewsEnabled: true
+    headers:
+      - path: /*
+        name: Cache-Control
+        value: public, max-age=0, must-revalidate
+      - path: /assets/*
+        name: Cache-Control
+        value: public, max-age=31536000, immutable
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
     envVars:
+      - key: VITE_SUPABASE_URL
+        value: https://mtdnwlpzowmedkelridl.supabase.co
+      - key: VITE_SUPABASE_PUBLISHABLE_KEY
+        value: sb_publishable_P4cKk4WnqcBYHmJ1piSkLw_kq4ZNiOA
       - key: NODE_VERSION
         value: 20

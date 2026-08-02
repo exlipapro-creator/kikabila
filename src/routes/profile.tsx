@@ -1,35 +1,128 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
-import { Loader2 } from "lucide-react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
+import { Loader2, Pencil, Check, X } from "lucide-react";
+import { toast } from "sonner";
 
 import { supabase } from "@/integrations/supabase/client";
 import { useProfile, useSession } from "@/lib/use-auth";
 import { levelFromXp, rankTitle, useBadges, usePlayerStats, useUserBadges } from "@/lib/gamification";
 import { BadgeGrid } from "@/components/BadgeGrid";
 import { LevelRing } from "@/components/PlayerHud";
+import { LanguagePicker, useLanguages } from "@/components/LanguagePicker";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { useT } from "@/lib/i18n";
 
 export const Route = createFileRoute("/profile")({
   head: () => ({
     meta: [
       { title: "Your trophy shelf — Kikabila" },
-      {
-        name: "description",
-        content:
-          "Track your Kikabila level, streak, badges and lifetime contributions to the Tanzanian language corpus.",
-      },
+      { name: "description", content: "Track your Kikabila level, streak, badges and lifetime contributions." },
       { property: "og:title", content: "Your trophy shelf — Kikabila" },
-      {
-        property: "og:description",
-        content: "Levels, badges, streaks and lifetime stats for your language contributions.",
-      },
       { property: "og:type", content: "profile" },
-      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: ProfilePage,
 });
+
+// ── Inline editable field ─────────────────────────────────────
+function EditableField({
+  value,
+  onSave,
+  placeholder,
+}: {
+  value: string;
+  onSave: (v: string) => Promise<void>;
+  placeholder?: string;
+}) {
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState(value);
+  const [busy, setBusy] = useState(false);
+
+  async function save() {
+    if (draft.trim() === value) { setEditing(false); return; }
+    setBusy(true);
+    await onSave(draft.trim());
+    setBusy(false);
+    setEditing(false);
+  }
+
+  if (!editing) {
+    return (
+      <button
+        className="group flex items-center gap-2"
+        onClick={() => { setDraft(value); setEditing(true); }}
+        aria-label="Edit"
+      >
+        <span className="font-display text-2xl text-primary sm:text-3xl">{value}</span>
+        <Pencil size={14} className="text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
+      </button>
+    );
+  }
+
+  return (
+    <div className="flex items-center gap-2">
+      <Input
+        autoFocus
+        value={draft}
+        placeholder={placeholder}
+        className="h-9 w-48 font-display text-xl"
+        onChange={(e) => setDraft(e.target.value)}
+        onKeyDown={(e) => { if (e.key === "Enter") save(); if (e.key === "Escape") setEditing(false); }}
+        maxLength={40}
+      />
+      <button onClick={save} disabled={busy} className="text-accent hover:text-foreground">
+        {busy ? <Loader2 size={16} className="animate-spin" /> : <Check size={16} />}
+      </button>
+      <button onClick={() => setEditing(false)} className="text-muted-foreground hover:text-foreground">
+        <X size={16} />
+      </button>
+    </div>
+  );
+}
+
+// ── Daily goal selector ───────────────────────────────────────
+const GOAL_OPTIONS = [5, 10, 15, 20, 30];
+
+function DailyGoalPicker({
+  current,
+  onSave,
+}: {
+  current: number;
+  onSave: (v: number) => Promise<void>;
+}) {
+  const [busy, setBusy] = useState(false);
+  const { t } = useT();
+
+  async function pick(v: number) {
+    if (v === current) return;
+    setBusy(true);
+    await onSave(v);
+    setBusy(false);
+  }
+
+  return (
+    <div className="flex flex-wrap items-center gap-2">
+      <span className="text-xs text-muted-foreground uppercase tracking-wide mr-1">{t("profile.dailyGoal")}:</span>
+      {GOAL_OPTIONS.map((v) => (
+        <button
+          key={v}
+          disabled={busy}
+          onClick={() => pick(v)}
+          className={`rounded-full border px-3 py-1 text-sm transition-all active:scale-95 ${
+            v === current
+              ? "border-primary bg-primary text-primary-foreground"
+              : "border-border text-muted-foreground hover:border-foreground/30 hover:text-foreground"
+          }`}
+        >
+          {v}
+        </button>
+      ))}
+    </div>
+  );
+}
 
 function ProfilePage() {
   const { t } = useT();
@@ -38,10 +131,19 @@ function ProfilePage() {
   const stats = usePlayerStats(user?.id);
   const badges = useBadges();
   const mine = useUserBadges(user?.id);
+  const qc = useQueryClient();
+  const preferredIds = (profile?.preferred_language_ids ?? []) as number[];
+  const { languages } = useLanguages(preferredIds);
+  const [savingLangs, setSavingLangs] = useState(false);
+  const [selectedLangs, setSelectedLangs] = useState<number[] | null>(null);
+
+  // Use profile preferred_language_ids as initial state once loaded
+  const effectiveLangs = selectedLangs ?? preferredIds;
 
   const xpFeed = useQuery({
     queryKey: ["xp-feed", user?.id],
     enabled: !!user,
+    staleTime: 60_000,
     queryFn: async () => {
       const { data, error } = await supabase
         .from("xp_events")
@@ -53,6 +155,36 @@ function ProfilePage() {
       return data ?? [];
     },
   });
+
+  async function saveField(field: "display_name" | "daily_goal", value: string | number) {
+    const { error } = await supabase
+      .from("profiles")
+      .update({ [field]: value })
+      .eq("id", user!.id);
+    if (error) { toast.error(error.message); throw error; }
+    qc.invalidateQueries({ queryKey: ["profile", user!.id] });
+    toast.success(t("profile.saved"));
+  }
+
+  async function saveLanguages(ids: number[]) {
+    setSavingLangs(true);
+    const { error } = await supabase
+      .from("profiles")
+      .update({ preferred_language_ids: ids })
+      .eq("id", user!.id);
+    setSavingLangs(false);
+    if (error) { toast.error(error.message); return; }
+    setSelectedLangs(ids);
+    qc.invalidateQueries({ queryKey: ["profile", user!.id] });
+    toast.success(t("profile.saved"));
+  }
+
+  function toggleLang(id: number) {
+    const next = effectiveLangs.includes(id)
+      ? effectiveLangs.filter((x) => x !== id)
+      : [...effectiveLangs, id];
+    setSelectedLangs(next);
+  }
 
   if (!ready) {
     return (
@@ -67,6 +199,9 @@ function ProfilePage() {
       <main className="mx-auto max-w-2xl px-4 py-20 text-center">
         <h1 className="font-display text-4xl text-primary">{t("profile.title")}</h1>
         <p className="mt-3 text-sm text-muted-foreground">{t("profile.signIn")}</p>
+        <Link to="/auth" className="mt-6 inline-flex rounded-full bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground">
+          {t("nav.signIn")}
+        </Link>
       </main>
     );
   }
@@ -77,13 +212,17 @@ function ProfilePage() {
 
   return (
     <main className="mx-auto max-w-3xl px-4 py-10">
+
+      {/* ── Header card ── */}
       <Card className="flex flex-wrap items-center gap-5 p-5">
         <LevelRing pct={lvl.pct} level={lvl.level} />
-        <div className="min-w-0 flex-1">
-          <h1 className="font-display text-2xl text-primary sm:text-3xl">
-            {profile?.display_name ?? t("play.player")}
-          </h1>
-          <p className="mt-1 text-sm text-muted-foreground">
+        <div className="min-w-0 flex-1 space-y-1">
+          <EditableField
+            value={profile?.display_name ?? t("play.player")}
+            placeholder={t("play.player")}
+            onSave={(v) => saveField("display_name", v)}
+          />
+          <p className="text-sm text-muted-foreground">
             {rankTitle(lvl.level)} · {profile?.xp ?? 0} XP · {t("hud.rank")} #{s?.rank ?? "—"}
           </p>
         </div>
@@ -94,6 +233,55 @@ function ProfilePage() {
         </div>
       </Card>
 
+      {/* ── Settings ── */}
+      <section className="mt-8">
+        <h2 className="font-display text-2xl">{t("profile.settings")}</h2>
+        <Card className="mt-3 space-y-5 p-5">
+          <DailyGoalPicker
+            current={profile?.daily_goal ?? 10}
+            onSave={(v) => saveField("daily_goal", v)}
+          />
+          <div>
+            <p className="mb-2 text-xs uppercase tracking-wide text-muted-foreground">{t("profile.myLanguages")}</p>
+            <div className="flex flex-wrap gap-2">
+              {languages.isLoading ? (
+                [80, 96, 72].map((w, i) => (
+                  <div key={i} className="animate-pulse rounded-full border border-border bg-muted" style={{ width: `${w}px`, height: "34px" }} />
+                ))
+              ) : (
+                (languages.data ?? []).map((l) => {
+                  const sel = effectiveLangs.includes(l.id);
+                  return (
+                    <button
+                      key={l.id}
+                      onClick={() => toggleLang(l.id)}
+                      className={`rounded-full border px-3 py-1.5 text-sm transition-all active:scale-95 ${
+                        sel
+                          ? "border-accent bg-accent/20 text-foreground"
+                          : "border-border text-muted-foreground hover:border-foreground/30 hover:text-foreground"
+                      }`}
+                    >
+                      {l.name}
+                    </button>
+                  );
+                })
+              )}
+            </div>
+            {selectedLangs !== null && (
+              <Button
+                size="sm"
+                className="mt-3"
+                disabled={savingLangs}
+                onClick={() => saveLanguages(effectiveLangs)}
+              >
+                {savingLangs ? <Loader2 size={14} className="animate-spin" /> : t("profile.saveLangs")}
+              </Button>
+            )}
+          </div>
+        </Card>
+      </section>
+
+      {/* ── Stats ── */}
       <section className="mt-8">
         <h2 className="font-display text-2xl">{t("profile.stats")}</h2>
         <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
@@ -106,31 +294,24 @@ function ProfilePage() {
         </div>
       </section>
 
+      {/* ── Badges ── */}
       <section className="mt-10">
         <h2 className="font-display text-2xl">{t("profile.badges")}</h2>
         <div className="mt-3">
           {badges.isLoading ? (
-            <div className="flex justify-center py-8">
-              <Loader2 className="animate-spin text-muted-foreground" />
-            </div>
+            <div className="flex justify-center py-8"><Loader2 className="animate-spin text-muted-foreground" /></div>
           ) : (
-            <BadgeGrid
-              badges={badges.data ?? []}
-              earned={earned}
-              lockedLabel={t("profile.locked")}
-            />
+            <BadgeGrid badges={badges.data ?? []} earned={earned} lockedLabel={t("profile.locked")} />
           )}
         </div>
       </section>
 
+      {/* ── Recent XP ── */}
       <section className="mt-10">
         <h2 className="font-display text-2xl">{t("profile.recent")}</h2>
         <ul className="mt-3 space-y-2">
           {(xpFeed.data ?? []).map((e) => (
-            <li
-              key={e.id}
-              className="flex items-center justify-between gap-3 rounded-xl border border-border/60 bg-card/60 px-4 py-2.5 text-sm"
-            >
+            <li key={e.id} className="flex items-center justify-between gap-3 rounded-xl border border-border/60 bg-card/60 px-4 py-2.5 text-sm">
               <span className="min-w-0 truncate text-muted-foreground">{e.reason}</span>
               <span className="shrink-0 font-medium text-primary">+{e.amount} XP</span>
             </li>

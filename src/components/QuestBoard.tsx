@@ -7,11 +7,13 @@ import { useT } from "@/lib/i18n";
 
 export function QuestBoard({ quests }: { quests: Quest[] }) {
   const { t } = useT();
+  const allDone = quests.length > 0 && quests.every((q) => q.progress >= q.target);
   return (
-    <Card className="p-4">
+    <Card className={`p-4 transition-colors duration-500 ${allDone ? "quest-board-done" : ""}`}>
       <div className="flex items-center gap-2">
-        <Sparkles size={16} className="text-accent" />
+        <Sparkles size={16} className={allDone ? "text-primary" : "text-accent"} />
         <h2 className="font-display text-xl">{t("quest.title")}</h2>
+        {allDone && <span className="ml-auto text-xs font-medium text-accent">✓ {t("quest.allDone")}</span>}
       </div>
       <p className="mt-1 text-xs text-muted-foreground">{t("quest.body")}</p>
       <ul className="mt-4 space-y-3">

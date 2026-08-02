@@ -86,7 +86,7 @@ function CountdownRing({ seconds, total }: { seconds: number; total: number }) {
         <circle cx="13" cy="13" r={r} fill="none" stroke="currentColor" strokeOpacity="0.2" strokeWidth="2.5" />
         <circle
           cx="13" cy="13" r={r} fill="none"
-          stroke="oklch(0.62 0.13 175)"
+          stroke="var(--color-accent)"
           strokeWidth="2.5"
           strokeDasharray={circ}
           strokeDashoffset={offset}
@@ -116,7 +116,6 @@ function Play() {
   const [phase, setPhase] = useState<"idle" | "submitting" | "success" | "transitioning" | "loading">("idle");
   const [freezeBusy, setFreezeBusy] = useState(false);
   const [badgeCount, setBadgeCount] = useState(0);
-  const [gainedXp, setGainedXp] = useState(0);
   const [countdown, setCountdown] = useState(0);
   const [cardAnim, setCardAnim] = useState<"" | "slide-out" | "slide-in">("");
 
@@ -255,7 +254,6 @@ function Play() {
 
     const afterXp = fresh?.xp ?? beforeXp;
     const gained = Math.max(0, afterXp - beforeXp);
-    setGainedXp(gained || 10);
 
     // Animate XP counter in HUD
     setXpTarget(afterXp);
@@ -361,8 +359,6 @@ function Play() {
           ref={cardRef}
           className={`mt-6 challenge-card ${cardAnim}`}
         >
-          {/* Rotating glow wrapper — active while the user can type */}
-          <div className={phase === "idle" || phase === "submitting" ? "challenge-glow" : ""}>
           <Card className="overflow-hidden">
             {/* Category bar */}
             <div className="flex items-center justify-between border-b border-border/60 bg-secondary/40 px-4 py-3 sm:px-6">
@@ -475,7 +471,6 @@ function Play() {
               </div>
             )}
           </Card>
-          </div> {/* /challenge-glow */}
         </div>
       )}
     </main>

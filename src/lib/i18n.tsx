@@ -103,6 +103,8 @@ const dict = {
     "consensus.empty": "Hakuna wagombea kwa lugha hii bado — cheza changamoto chache kuzalisha ushahidi.",
     "consensus.for": "kwa",
     "consensus.agree": "wanakubali",
+    "consensus.signInTitle": "Ingia ili kuona maafikiano",
+    "consensus.signInBody": "Wagombea wanaohitaji ukaguzi wanaonekana kwa wachangiaji walioingia.",
 
     "review.title": "Foleni ya ukaguzi",
     "review.body":
@@ -132,6 +134,8 @@ const dict = {
     "corpus.coverage": "Ufikiaji wa katalogi:",
     "corpus.ofBaseWords": "kati ya maneno msingi",
     "corpus.empty": "Hakuna kilichothibitishwa kwa lugha hii bado. Wagombea lazima wapite foleni ya ukaguzi kwanza.",
+    "corpus.signInTitle": "Ingia ili kuona kamusi",
+    "corpus.signInBody": "Maingizo yaliyothibitishwa yanapatikana kwa wachangiaji walioingia.",
 
     "board.title": "Ubao wa viongozi",
     "board.body":
@@ -145,6 +149,8 @@ const dict = {
     "board.you": "Wewe",
     "board.weekEmpty": "Hakuna aliyefunga wiki hii bado — fungua wiki kwa jibu la kwanza.",
     "board.badges": "beji",
+    "board.signInTitle": "Ingia ili kuona viongozi",
+    "board.signInBody": "Jiunge na washindani wanaotoa mchango kwa lugha za Tanzania.",
 
     "nav.profile": "Wasifu",
 
@@ -162,6 +168,7 @@ const dict = {
     "quest.notes": "Ongeza maelezo 2 ya kitamaduni",
     "quest.langs": "Changia katika lugha 2",
     "quest.done": "Imekamilika",
+    "quest.allDone": "Misheni yote imekamilika",
 
     "celebrate.levelUp": "Umepanda ngazi!",
     "celebrate.levelUpSub": "Sasa wewe ni",
@@ -175,6 +182,11 @@ const dict = {
     "profile.badges": "Beji",
     "profile.locked": "Imefungwa",
     "profile.stats": "Takwimu za maisha",
+    "profile.settings": "Mipangilio",
+    "profile.dailyGoal": "Lengo la kila siku",
+    "profile.myLanguages": "Lugha zangu",
+    "profile.saveLangs": "Hifadhi lugha",
+    "profile.saved": "Imehifadhiwa",
     "profile.words": "Maneno uliyochangia",
     "profile.notesStat": "Maelezo ya kitamaduni",
     "profile.langsStat": "Lugha ulizogusa",
@@ -283,6 +295,8 @@ const dict = {
     "consensus.empty": "No candidates for this language yet — play a few challenges to generate observations.",
     "consensus.for": "for",
     "consensus.agree": "agree",
+    "consensus.signInTitle": "Sign in to view consensus",
+    "consensus.signInBody": "Candidates awaiting review are visible to signed-in contributors.",
 
     "review.title": "Reviewer queue",
     "review.body":
@@ -312,6 +326,8 @@ const dict = {
     "corpus.coverage": "Catalog coverage:",
     "corpus.ofBaseWords": "of base words",
     "corpus.empty": "Nothing verified for this language yet. Candidates must clear the reviewer queue first.",
+    "corpus.signInTitle": "Sign in to browse the corpus",
+    "corpus.signInBody": "Verified entries are available to signed-in contributors.",
 
     "board.title": "Leaderboard",
     "board.body":
@@ -325,6 +341,8 @@ const dict = {
     "board.you": "You",
     "board.weekEmpty": "Nobody has scored this week yet — open the week with the first answer.",
     "board.badges": "badges",
+    "board.signInTitle": "Sign in to see the leaderboard",
+    "board.signInBody": "Join the contributors building the Tanzanian language corpus.",
 
     "nav.profile": "Profile",
 
@@ -342,6 +360,7 @@ const dict = {
     "quest.notes": "Add 2 cultural notes",
     "quest.langs": "Contribute in 2 languages",
     "quest.done": "Done",
+    "quest.allDone": "All quests complete",
 
     "celebrate.levelUp": "Level up!",
     "celebrate.levelUpSub": "You are now",
@@ -355,6 +374,11 @@ const dict = {
     "profile.badges": "Badges",
     "profile.locked": "Locked",
     "profile.stats": "Lifetime stats",
+    "profile.settings": "Settings",
+    "profile.dailyGoal": "Daily goal",
+    "profile.myLanguages": "My languages",
+    "profile.saveLangs": "Save languages",
+    "profile.saved": "Saved",
     "profile.words": "Words contributed",
     "profile.notesStat": "Cultural notes",
     "profile.langsStat": "Languages touched",

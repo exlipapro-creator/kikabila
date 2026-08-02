@@ -1,8 +1,9 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Loader2, Lock } from "lucide-react";
+import { Loader2, Lock, LogIn } from "lucide-react";
 
 import { supabase } from "@/integrations/supabase/client";
+import { useSession } from "@/lib/use-auth";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -13,22 +14,15 @@ export const Route = createFileRoute("/corpus")({
   head: () => ({
     meta: [
       { title: "Verified corpus — Kikabila" },
-      {
-        name: "description",
-        content:
-          "Browse the immutable, versioned corpus of verified Swahili-to-tribal-language translations and per-language coverage.",
-      },
+      { name: "description", content: "Browse the immutable, versioned corpus of verified Swahili-to-tribal-language translations." },
       { property: "og:title", content: "Verified corpus — Kikabila" },
-      {
-        property: "og:description",
-        content: "Immutable, versioned verified translations with full coverage reporting.",
-      },
     ],
   }),
   component: Corpus,
 });
 
 function Corpus() {
+  const { user } = useSession();
   const { languages, languageId, setLanguageId } = useLanguages();
   const { t } = useT();
   const language = languages.data?.find((l) => l.id === languageId);
@@ -36,6 +30,7 @@ function Corpus() {
   const corpus = useQuery({
     queryKey: ["corpus", languageId],
     enabled: !!languageId,
+    staleTime: 10 * 60_000, // 10 min — corpus rarely changes
     queryFn: async () => {
       const [verified, words] = await Promise.all([
         supabase
@@ -60,9 +55,15 @@ function Corpus() {
       <p className="mt-2 max-w-xl text-sm text-muted-foreground">{t("corpus.body")}</p>
 
       <div className="mt-6">
-        <LanguagePicker languages={languages.data ?? []} value={languageId} onChange={setLanguageId} />
+        <LanguagePicker
+          languages={languages.data ?? []}
+          value={languageId}
+          onChange={setLanguageId}
+          loading={languages.isLoading}
+        />
       </div>
 
+      {/* Coverage card — visible to all */}
       <Card className="mt-6 p-5">
         <div className="flex items-baseline justify-between">
           <span className="font-display text-2xl">{language?.name ?? "—"}</span>
@@ -77,29 +78,50 @@ function Corpus() {
         </p>
       </Card>
 
-      {corpus.isLoading ? (
-        <div className="mt-10 flex justify-center">
-          <Loader2 className="animate-spin text-muted-foreground" />
-        </div>
-      ) : !corpus.data?.rows.length ? (
-        <Card className="mt-6 p-8 text-center text-sm text-muted-foreground">
-          {t("corpus.empty")}
+      {/* Anon prompt — show instead of empty state for logged-out users */}
+      {!user && (
+        <Card className="mt-6 flex flex-col items-center gap-4 p-8 text-center">
+          <LogIn size={28} className="text-accent" />
+          <div>
+            <p className="font-medium">{t("corpus.signInTitle")}</p>
+            <p className="mt-1 text-sm text-muted-foreground">{t("corpus.signInBody")}</p>
+          </div>
+          <Link to="/auth" className="rounded-full bg-primary px-5 py-2 text-sm font-medium text-primary-foreground">
+            {t("nav.signIn")}
+          </Link>
         </Card>
-      ) : (
-        <ul className="mt-6 space-y-2">
-          {corpus.data.rows.map((tr) => (
-            <Card key={tr.id} className="flex flex-wrap items-center gap-3 p-4">
-              <Lock size={14} className="text-accent" />
-              <span className="font-display text-xl">{tr.translated_text}</span>
-              <span className="text-sm text-muted-foreground">
-                {tr.base_words?.swahili_word} · {tr.base_words?.english_word}
-              </span>
-              <Badge variant="outline" className="ml-auto">
-                v{tr.version}
-              </Badge>
-            </Card>
-          ))}
-        </ul>
+      )}
+
+      {/* Corpus list — only for signed-in users */}
+      {user && (
+        corpus.isLoading ? (
+          <div className="mt-6 space-y-2">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="h-14 animate-pulse rounded-xl bg-muted" />
+            ))}
+          </div>
+        ) : !corpus.data?.rows.length ? (
+          <Card className="mt-6 p-8 text-center text-sm text-muted-foreground">
+            {t("corpus.empty")}
+          </Card>
+        ) : (
+          <ul className="mt-6 space-y-2">
+            {corpus.data.rows.map((tr) => (
+              <li key={tr.id}>
+                <Card className="flex flex-wrap items-center gap-3 p-4">
+                  <Lock size={14} className="shrink-0 text-accent" />
+                  <span className="font-display text-xl">{tr.translated_text}</span>
+                  <span className="text-sm text-muted-foreground">
+                    {tr.base_words?.swahili_word} · {tr.base_words?.english_word}
+                  </span>
+                  <Badge variant="outline" className="ml-auto shrink-0">
+                    v{tr.version}
+                  </Badge>
+                </Card>
+              </li>
+            ))}
+          </ul>
+        )
       )}
     </main>
   );

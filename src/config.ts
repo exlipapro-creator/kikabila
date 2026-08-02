@@ -1,5 +1,7 @@
-// Configuration for static deployment
+// Supabase credentials — read from environment variables.
+// In development, create a .env file based on .env.example.
+// In production, set these in your hosting provider's environment config.
 export const supabaseConfig = {
-  url: 'https://mtdnwlpzowmedkelridl.supabase.co',
-  publishableKey: 'sb_publishable_P4cKk4WnqcBYHmJ1piSkLw_kq4ZNiOA'
+  url: import.meta.env.VITE_SUPABASE_URL as string,
+  publishableKey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string,
 };
