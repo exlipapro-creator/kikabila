@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
-import { CheckCircle2, Loader2 } from "lucide-react";
+import { CheckCircle2, Loader2, Mail } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -149,7 +149,9 @@ function Auth() {
   if (screen === "confirm") {
     return (
       <main className="mx-auto flex max-w-md flex-col px-4 py-16 text-center">
-        <div className="text-5xl">✉️</div>
+        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-accent/15">
+          <Mail size={32} className="text-accent" />
+        </div>
         <h1 className="mt-4 font-display text-3xl text-primary">{t("auth.checkInbox")}</h1>
         <p className="mt-3 text-sm text-muted-foreground">
           {t("auth.confirmSent")} <strong>{email}</strong>
