@@ -359,6 +359,8 @@ function Play() {
           ref={cardRef}
           className={`mt-6 challenge-card ${cardAnim}`}
         >
+          {/* Rotating glow — active while user can type, removed after submit */}
+          <div className={phase === "idle" || phase === "submitting" ? "challenge-glow" : ""}>
           <Card className="overflow-hidden">
             {/* Category bar */}
             <div className="flex items-center justify-between border-b border-border/60 bg-secondary/40 px-4 py-3 sm:px-6">
@@ -471,6 +473,7 @@ function Play() {
               </div>
             )}
           </Card>
+          </div> {/* /challenge-glow */}
         </div>
       )}
     </main>

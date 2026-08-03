@@ -16,6 +16,9 @@ const dict = {
 
     "common.loading": "Inapakia…",
     "common.language": "Lugha",
+    "lang.mine": "Zangu",
+    "lang.myLanguages": "Lugha zangu",
+    "lang.allLanguages": "Lugha zote",
 
     "play.player": "Mchezaji",
     "play.level": "Ngazi",
@@ -208,6 +211,9 @@ const dict = {
 
     "common.loading": "Loading…",
     "common.language": "Language",
+    "lang.mine": "Mine",
+    "lang.myLanguages": "My languages",
+    "lang.allLanguages": "All languages",
 
     "play.player": "Player",
     "play.level": "Level",
