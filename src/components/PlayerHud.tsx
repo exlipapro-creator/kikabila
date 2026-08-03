@@ -51,6 +51,9 @@ export function PlayerHud({
 
   return (
     <Card className="hud-card hud-aurora overflow-visible p-0">
+      {/* Top and bottom aurora beams — left/right use ::before/::after */}
+      <span className="hud-aurora-top" aria-hidden />
+      <span className="hud-aurora-bottom" aria-hidden />
 
       {/* ── Top section ── */}
       <div className="flex items-start gap-3 p-4 pb-3">

@@ -379,51 +379,92 @@ h1, h2, .font-display {
 .animate-trophy-pop { animation: trophy-pop 2.6s ease-out forwards; }
 
 /* ── Aurora breathing effect on PlayerHud card ───────────────
-   Two soft light beams drift up/down on left and right edges,
-   out of phase — like candlelight. No rotation, pure CSS.
+   Four soft light beams — left, right, top, bottom — drift
+   along their respective edges, all out of phase.
 ─────────────────────────────────────────────────────────────── */
 .hud-aurora {
   position: relative;
   overflow: visible !important;
 }
 
+/* Shared pseudo-element reset */
 .hud-aurora::before,
 .hud-aurora::after {
   content: "";
   position: absolute;
-  width: 4px;
-  height: 50%;
   border-radius: 9999px;
   pointer-events: none;
-  z-index: 0;
+  z-index: 1;
   filter: blur(5px);
 }
 
-/* left beam — saffron to teal */
+/* LEFT beam — drifts top→bottom */
 .hud-aurora::before {
   left: -3px;
+  width: 4px;
+  height: 50%;
   background: linear-gradient(
     to bottom,
     transparent 0%,
-    oklch(0.78 0.16 68 / 0.8) 35%,
-    oklch(0.62 0.13 175 / 0.6) 65%,
+    oklch(0.78 0.16 68 / 0.85) 35%,
+    oklch(0.62 0.13 175 / 0.65) 65%,
     transparent 100%
   );
   animation: aurora-left 4.5s ease-in-out infinite;
 }
 
-/* right beam — teal to saffron, offset by half cycle */
+/* RIGHT beam — drifts bottom→top (half-phase offset) */
 .hud-aurora::after {
   right: -3px;
+  width: 4px;
+  height: 50%;
   background: linear-gradient(
     to bottom,
     transparent 0%,
-    oklch(0.62 0.13 175 / 0.6) 30%,
-    oklch(0.78 0.16 68 / 0.8) 65%,
+    oklch(0.62 0.13 175 / 0.65) 30%,
+    oklch(0.78 0.16 68 / 0.85) 65%,
     transparent 100%
   );
   animation: aurora-right 4.5s ease-in-out infinite;
   animation-delay: -2.25s;
+}
+
+/* TOP beam — drifts left→right, uses a child span */
+.hud-aurora-top,
+.hud-aurora-bottom {
+  position: absolute;
+  height: 4px;
+  width: 50%;
+  border-radius: 9999px;
+  pointer-events: none;
+  z-index: 1;
+  filter: blur(5px);
+}
+
+.hud-aurora-top {
+  top: -3px;
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    oklch(0.78 0.16 68 / 0.85) 35%,
+    oklch(0.62 0.13 175 / 0.65) 65%,
+    transparent 100%
+  );
+  animation: aurora-top 4.5s ease-in-out infinite;
+  animation-delay: -1.125s;
+}
+
+.hud-aurora-bottom {
+  bottom: -3px;
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    oklch(0.62 0.13 175 / 0.65) 30%,
+    oklch(0.78 0.16 68 / 0.85) 65%,
+    transparent 100%
+  );
+  animation: aurora-bottom 4.5s ease-in-out infinite;
+  animation-delay: -3.375s;
 }
 
 @keyframes aurora-left {
@@ -438,9 +479,23 @@ h1, h2, .font-display {
   100% { top: 42%; opacity: 1;   }
 }
 
+@keyframes aurora-top {
+  0%   { left: 5%;  opacity: 0.5; }
+  50%  { left: 45%; opacity: 1;   }
+  100% { left: 5%;  opacity: 0.5; }
+}
+
+@keyframes aurora-bottom {
+  0%   { left: 45%; opacity: 1;   }
+  50%  { left: 5%;  opacity: 0.5; }
+  100% { left: 45%; opacity: 1;   }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .hud-aurora::before,
-  .hud-aurora::after { animation: none; opacity: 0.4; top: 25%; }
+  .hud-aurora::after,
+  .hud-aurora-top,
+  .hud-aurora-bottom { animation: none; opacity: 0.35; }
 }
 
 /* ── Rotating glow border on challenge card (kept for reference) ── */
