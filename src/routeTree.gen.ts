@@ -18,7 +18,7 @@ import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as ReviewRouteImport } from './routes/review'
 import { Route as RewardsRouteImport } from './routes/rewards'
 import { Route as StreakRouteImport } from './routes/streak'
-import { Route as AdminVouchersRouteImport } from './routes/admin/vouchers'
+import { Route as VouchersAdminRouteImport } from './routes/vouchers-admin'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -65,9 +65,9 @@ const StreakRoute = StreakRouteImport.update({
   path: '/streak',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminVouchersRoute = AdminVouchersRouteImport.update({
-  id: '/admin/vouchers',
-  path: '/admin/vouchers',
+const VouchersAdminRoute = VouchersAdminRouteImport.update({
+  id: '/vouchers-admin',
+  path: '/vouchers-admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -81,7 +81,7 @@ export interface FileRoutesByFullPath {
   '/review': typeof ReviewRoute
   '/rewards': typeof RewardsRoute
   '/streak': typeof StreakRoute
-  '/admin/vouchers': typeof AdminVouchersRoute
+  '/vouchers-admin': typeof VouchersAdminRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -93,7 +93,7 @@ export interface FileRoutesByTo {
   '/review': typeof ReviewRoute
   '/rewards': typeof RewardsRoute
   '/streak': typeof StreakRoute
-  '/admin/vouchers': typeof AdminVouchersRoute
+  '/vouchers-admin': typeof VouchersAdminRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -106,7 +106,7 @@ export interface FileRoutesById {
   '/review': typeof ReviewRoute
   '/rewards': typeof RewardsRoute
   '/streak': typeof StreakRoute
-  '/admin/vouchers': typeof AdminVouchersRoute
+  '/vouchers-admin': typeof VouchersAdminRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -120,7 +120,7 @@ export interface FileRouteTypes {
     | '/review'
     | '/rewards'
     | '/streak'
-    | '/admin/vouchers'
+    | '/vouchers-admin'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -132,7 +132,7 @@ export interface FileRouteTypes {
     | '/review'
     | '/rewards'
     | '/streak'
-    | '/admin/vouchers'
+    | '/vouchers-admin'
   id:
     | '__root__'
     | '/'
@@ -144,7 +144,7 @@ export interface FileRouteTypes {
     | '/review'
     | '/rewards'
     | '/streak'
-    | '/admin/vouchers'
+    | '/vouchers-admin'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -157,7 +157,7 @@ export interface RootRouteChildren {
   ReviewRoute: typeof ReviewRoute
   RewardsRoute: typeof RewardsRoute
   StreakRoute: typeof StreakRoute
-  AdminVouchersRoute: typeof AdminVouchersRoute
+  VouchersAdminRoute: typeof VouchersAdminRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -225,11 +225,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StreakRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/vouchers': {
-      id: '/admin/vouchers'
-      path: '/admin/vouchers'
-      fullPath: '/admin/vouchers'
-      preLoaderRoute: typeof AdminVouchersRouteImport
+    '/vouchers-admin': {
+      id: '/vouchers-admin'
+      path: '/vouchers-admin'
+      fullPath: '/vouchers-admin'
+      preLoaderRoute: typeof VouchersAdminRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -245,7 +245,7 @@ const rootRouteChildren: RootRouteChildren = {
   ReviewRoute: ReviewRoute,
   RewardsRoute: RewardsRoute,
   StreakRoute: StreakRoute,
-  AdminVouchersRoute: AdminVouchersRoute,
+  VouchersAdminRoute: VouchersAdminRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

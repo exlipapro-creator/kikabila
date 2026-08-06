@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-export const Route = createFileRoute("/admin/vouchers")({
+export const Route = createFileRoute("/vouchers-admin")({
   head: () => ({ meta: [{ title: "Voucher admin — Kikabila" }] }),
   component: VoucherAdmin,
 });
