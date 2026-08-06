@@ -16,6 +16,7 @@ import { Route as CorpusRouteImport } from './routes/corpus'
 import { Route as LeaderboardRouteImport } from './routes/leaderboard'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as ReviewRouteImport } from './routes/review'
+import { Route as RewardsRouteImport } from './routes/rewards'
 import { Route as StreakRouteImport } from './routes/streak'
 import { Route as AdminVouchersRouteImport } from './routes/admin/vouchers'
 
@@ -54,6 +55,11 @@ const ReviewRoute = ReviewRouteImport.update({
   path: '/review',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RewardsRoute = RewardsRouteImport.update({
+  id: '/rewards',
+  path: '/rewards',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const StreakRoute = StreakRouteImport.update({
   id: '/streak',
   path: '/streak',
@@ -73,6 +79,7 @@ export interface FileRoutesByFullPath {
   '/leaderboard': typeof LeaderboardRoute
   '/profile': typeof ProfileRoute
   '/review': typeof ReviewRoute
+  '/rewards': typeof RewardsRoute
   '/streak': typeof StreakRoute
   '/admin/vouchers': typeof AdminVouchersRoute
 }
@@ -84,6 +91,7 @@ export interface FileRoutesByTo {
   '/leaderboard': typeof LeaderboardRoute
   '/profile': typeof ProfileRoute
   '/review': typeof ReviewRoute
+  '/rewards': typeof RewardsRoute
   '/streak': typeof StreakRoute
   '/admin/vouchers': typeof AdminVouchersRoute
 }
@@ -96,6 +104,7 @@ export interface FileRoutesById {
   '/leaderboard': typeof LeaderboardRoute
   '/profile': typeof ProfileRoute
   '/review': typeof ReviewRoute
+  '/rewards': typeof RewardsRoute
   '/streak': typeof StreakRoute
   '/admin/vouchers': typeof AdminVouchersRoute
 }
@@ -109,6 +118,7 @@ export interface FileRouteTypes {
     | '/leaderboard'
     | '/profile'
     | '/review'
+    | '/rewards'
     | '/streak'
     | '/admin/vouchers'
   fileRoutesByTo: FileRoutesByTo
@@ -120,6 +130,7 @@ export interface FileRouteTypes {
     | '/leaderboard'
     | '/profile'
     | '/review'
+    | '/rewards'
     | '/streak'
     | '/admin/vouchers'
   id:
@@ -131,6 +142,7 @@ export interface FileRouteTypes {
     | '/leaderboard'
     | '/profile'
     | '/review'
+    | '/rewards'
     | '/streak'
     | '/admin/vouchers'
   fileRoutesById: FileRoutesById
@@ -143,6 +155,7 @@ export interface RootRouteChildren {
   LeaderboardRoute: typeof LeaderboardRoute
   ProfileRoute: typeof ProfileRoute
   ReviewRoute: typeof ReviewRoute
+  RewardsRoute: typeof RewardsRoute
   StreakRoute: typeof StreakRoute
   AdminVouchersRoute: typeof AdminVouchersRoute
 }
@@ -198,6 +211,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ReviewRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/rewards': {
+      id: '/rewards'
+      path: '/rewards'
+      fullPath: '/rewards'
+      preLoaderRoute: typeof RewardsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/streak': {
       id: '/streak'
       path: '/streak'
@@ -223,6 +243,7 @@ const rootRouteChildren: RootRouteChildren = {
   LeaderboardRoute: LeaderboardRoute,
   ProfileRoute: ProfileRoute,
   ReviewRoute: ReviewRoute,
+  RewardsRoute: RewardsRoute,
   StreakRoute: StreakRoute,
   AdminVouchersRoute: AdminVouchersRoute,
 }

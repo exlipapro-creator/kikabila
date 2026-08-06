@@ -560,10 +560,21 @@ h1, h2, .font-display {
   .challenge-card,
   .challenge-card.slide-in,
   .animate-check-pop,
+  .scratch-reveal,
   .challenge-glow,
   .challenge-aurora::before,
   .challenge-aurora::after,
   .badge-tier-legend .badge-medal { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+}
+
+/* ── Scratch card reveal animation ── */
+@keyframes scratch-reveal {
+  0%   { opacity: 0; transform: scale(0.85) translateY(4px); filter: blur(6px); }
+  60%  { opacity: 1; transform: scale(1.04) translateY(0);   filter: blur(0); }
+  100% { transform: scale(1); }
+}
+.scratch-reveal {
+  animation: scratch-reveal 550ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
 
 /* ── Textarea — hide native scrollbar, keep functionality ── */
