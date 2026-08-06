@@ -16,6 +16,7 @@ import { Route as CorpusRouteImport } from './routes/corpus'
 import { Route as LeaderboardRouteImport } from './routes/leaderboard'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as ReviewRouteImport } from './routes/review'
+import { Route as StreakRouteImport } from './routes/streak'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -52,6 +53,11 @@ const ReviewRoute = ReviewRouteImport.update({
   path: '/review',
   getParentRoute: () => rootRouteImport,
 } as any)
+const StreakRoute = StreakRouteImport.update({
+  id: '/streak',
+  path: '/streak',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -61,6 +67,7 @@ export interface FileRoutesByFullPath {
   '/leaderboard': typeof LeaderboardRoute
   '/profile': typeof ProfileRoute
   '/review': typeof ReviewRoute
+  '/streak': typeof StreakRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -70,6 +77,7 @@ export interface FileRoutesByTo {
   '/leaderboard': typeof LeaderboardRoute
   '/profile': typeof ProfileRoute
   '/review': typeof ReviewRoute
+  '/streak': typeof StreakRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -80,6 +88,7 @@ export interface FileRoutesById {
   '/leaderboard': typeof LeaderboardRoute
   '/profile': typeof ProfileRoute
   '/review': typeof ReviewRoute
+  '/streak': typeof StreakRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -91,6 +100,7 @@ export interface FileRouteTypes {
     | '/leaderboard'
     | '/profile'
     | '/review'
+    | '/streak'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -100,6 +110,7 @@ export interface FileRouteTypes {
     | '/leaderboard'
     | '/profile'
     | '/review'
+    | '/streak'
   id:
     | '__root__'
     | '/'
@@ -109,6 +120,7 @@ export interface FileRouteTypes {
     | '/leaderboard'
     | '/profile'
     | '/review'
+    | '/streak'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -119,6 +131,7 @@ export interface RootRouteChildren {
   LeaderboardRoute: typeof LeaderboardRoute
   ProfileRoute: typeof ProfileRoute
   ReviewRoute: typeof ReviewRoute
+  StreakRoute: typeof StreakRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -172,6 +185,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ReviewRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/streak': {
+      id: '/streak'
+      path: '/streak'
+      fullPath: '/streak'
+      preLoaderRoute: typeof StreakRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -183,6 +203,7 @@ const rootRouteChildren: RootRouteChildren = {
   LeaderboardRoute: LeaderboardRoute,
   ProfileRoute: ProfileRoute,
   ReviewRoute: ReviewRoute,
+  StreakRoute: StreakRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

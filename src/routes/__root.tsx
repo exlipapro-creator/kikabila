@@ -65,6 +65,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 const NAV = [
   { to: "/", key: "nav.play" },
+  { to: "/streak", key: "nav.streak" },
   { to: "/consensus", key: "nav.consensus" },
   { to: "/review", key: "nav.review" },
   { to: "/corpus", key: "nav.corpus" },

@@ -1,5 +1,6 @@
 import { Flame, Gem, ShieldCheck, Snowflake, Target, Trophy } from "lucide-react";
 
+import { Link } from "@tanstack/react-router";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
@@ -82,7 +83,15 @@ export function PlayerHud({
 
         {/* Right column: 2×2 stat grid */}
         <div className="grid grid-cols-2 gap-x-3 gap-y-2 pt-0.5">
-          <Stat icon={<Flame size={14} />} value={profile?.streak_current ?? 0} label={t("play.streak")} tone="primary" />
+          <Link to="/streak" className="text-center min-w-[2.8rem]">
+            <div className="flex items-center justify-center gap-1 text-primary">
+              <Flame size={14} />
+              <span className="font-semibold tabular-nums text-sm leading-none">{profile?.streak_current ?? 0}</span>
+            </div>
+            <span className="mt-0.5 block text-[0.58rem] uppercase tracking-wide text-muted-foreground leading-none">
+              {t("play.streak")}
+            </span>
+          </Link>
           <Stat icon={<Gem size={14} />} value={profile?.gems ?? 0} label={t("hud.gems")} tone="accent" />
           <Stat icon={<ShieldCheck size={14} />} value={Math.round(Number(profile?.trust_score ?? 50))} label={t("play.trust")} tone="accent" />
           {typeof rank === "number"
