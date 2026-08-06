@@ -155,9 +155,9 @@ function CalendarGrid({ played, loading }: { played: Set<string>; loading: boole
 
   if (loading) {
     return (
-      <div className="grid grid-cols-7 gap-1.5">
+      <div className="grid grid-cols-7 gap-1">
         {days.map((_, i) => (
-          <div key={i} className="aspect-square w-full animate-pulse rounded-md bg-muted" />
+          <div key={i} className="aspect-square w-full animate-pulse rounded-lg bg-muted" />
         ))}
       </div>
     );
@@ -166,7 +166,7 @@ function CalendarGrid({ played, loading }: { played: Set<string>; loading: boole
   const today = new Date().toISOString().slice(0, 10);
 
   return (
-    <div className="grid grid-cols-7 gap-1.5">
+    <div className="grid grid-cols-7 gap-1">
       {days.map((d) => {
         const didPlay = played.has(d.date);
         const isToday = d.date === today;
@@ -174,14 +174,14 @@ function CalendarGrid({ played, loading }: { played: Set<string>; loading: boole
           <div
             key={d.date}
             title={`${d.label}${didPlay ? " ✓" : ""}`}
-            className={`aspect-square w-full rounded-md transition-all ${
+            className={`aspect-square w-full rounded-lg transition-all ${
               isToday
                 ? didPlay
-                  ? "bg-primary ring-2 ring-primary ring-offset-1 ring-offset-background"
-                  : "ring-2 ring-border ring-offset-1 ring-offset-background bg-muted/60"
+                  ? "bg-primary ring-2 ring-primary ring-offset-2 ring-offset-background"
+                  : "bg-muted/40 ring-2 ring-border ring-offset-2 ring-offset-background"
                 : didPlay
-                  ? "bg-primary opacity-85"
-                  : "bg-muted/50"
+                  ? "bg-primary opacity-90"
+                  : "bg-muted/40"
             }`}
           />
         );
