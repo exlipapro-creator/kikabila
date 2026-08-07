@@ -50,6 +50,8 @@ type Challenge = {
   english_word: string;
   category: string;
   reason: string;
+  tier?: number;
+  challenge_type?: string;
 };
 
 // Animate a number from start to end over ~600ms using rAF
@@ -364,9 +366,20 @@ function Play() {
           <Card className="overflow-hidden">
             {/* Category bar */}
             <div className="flex items-center justify-between border-b border-border/60 bg-secondary/40 px-4 py-3 sm:px-6">
-              <span className="text-xs uppercase tracking-widest text-muted-foreground">
-                {challenge.category} · {challenge.reason}
-              </span>
+              <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-0.5">
+                <span className="text-xs uppercase tracking-widest text-muted-foreground">
+                  {challenge.category}
+                </span>
+                {challenge.challenge_type && challenge.challenge_type !== "word" && (
+                  <span className={`rounded-full px-2 py-0.5 text-[0.6rem] uppercase tracking-wide font-medium ${
+                    challenge.challenge_type === "phrase"   ? "bg-accent/20 text-accent" :
+                    challenge.challenge_type === "sentence" ? "bg-primary/20 text-primary" :
+                    "bg-yellow-500/20 text-yellow-400"
+                  }`}>
+                    {challenge.challenge_type}
+                  </span>
+                )}
+              </div>
               {isLocked && countdown > 0 && (
                 <CountdownRing seconds={countdown} total={3} />
               )}
@@ -382,8 +395,17 @@ function Play() {
                 </div>
               ) : (
                 <>
-                  <p className="text-sm text-muted-foreground">{t("play.howDoYouSay")}</p>
-                  <h1 className="mt-1 font-display text-4xl text-primary sm:text-5xl">{challenge.swahili_word}</h1>
+                  <p className="text-sm text-muted-foreground">
+                    {challenge.challenge_type === "phrase"   ? t("play.howDoYouSayPhrase") :
+                     challenge.challenge_type === "sentence" ? t("play.translateSentence") :
+                     challenge.challenge_type === "proverb"  ? t("play.translateProverb") :
+                     t("play.howDoYouSay")}
+                  </p>
+                  <h1 className={`mt-2 font-display text-primary ${
+                    challenge.challenge_type === "word" || !challenge.challenge_type
+                      ? "text-4xl sm:text-5xl"
+                      : "text-2xl sm:text-3xl leading-snug"
+                  }`}>{challenge.swahili_word}</h1>
                   <p className="mt-1 text-sm italic text-muted-foreground">"{challenge.english_word}"</p>
                 </>
               )}
@@ -409,7 +431,7 @@ function Play() {
                   disabled={isBusy || isTransitioning}
                   onChange={(e) => setNote(e.target.value)}
                   placeholder={t("play.notePlaceholder")}
-                  rows={2}
+                  rows={challenge.challenge_type === "sentence" || challenge.challenge_type === "proverb" ? 3 : 2}
                 />
               )}
               <Button
